@@ -4,5 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string nam="MpgFolder">Main Storage/TestMpgReader</string>
+    <string name="MpgFolder">/sdcard/TestMpgFolder</string>
+    <string name="TestFile">/sdcard/trackLog-2015-May-22_07-00-25.csv</string>
 </resources>

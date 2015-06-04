@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -14,55 +15,95 @@ import java.io.RandomAccessFile;
 public class MpgFile {
 
     private final Context context;
-    private File myFile;
-    private FileReader fileReader;
-//    private RandomAccessFile
+//    private File myFile;
 
     public MpgFile(Context context) {
         this.context = context;
     }
 
-    public boolean OpenFile(String filename) {
-        if (myFile == null)
-            myFile = new File(filename);
+    public boolean TestFile(String filename) {
+        File myFile = new File(filename);
         if (myFile.exists() && myFile.isFile() && myFile.canRead()) {
-            try {
-//                fileReader = new FileReader(myFile);
-//                fileReader
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    public boolean CloseFile() {
-        if (myFile != null ) {
+            System.out.println("File found!");
             return true;
         }
+        System.out.println("File not found!");
         return false;
     }
 
     public String ReadHeaderLine(String filename) {
-        String headerLine = null;
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            headerLine = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String line = null;
+        if (TestFile(filename)) {
+            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+                line = br.readLine();
+                br.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return headerLine;
+        return line;
     }
 
     public String ReadLastDataLine(String filename) {
-        return null;
+        String line = null;
+        long lastLineStart = FindLastLineStart(filename);
+        if (TestFile(filename)) {
+            try (RandomAccessFile r = new RandomAccessFile(filename, "r")) {
+                r.seek(lastLineStart);
+                line = r.readLine();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return line;
     }
 
     public String ReadFirstDataLine(String filename) {
-        return null;
+        String line = null;
+        if (TestFile(filename)) {
+            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+                br.readLine();  // readLine() to skip over first line
+                line = br.readLine();
+                br.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return line;
     }
 
     public Context getContext() {
         return context;
+    }
+
+    public long FindLastLineStart(String filename) {
+        long start = 0;
+        if (TestFile(filename)) {
+            try (RandomAccessFile r = new RandomAccessFile(filename, "r")) {
+                r.seek(r.length() - 2); // Skipping last 2 bytes to ignore trailing line separator
+                char check = 0;
+                long fp = r.getFilePointer();
+                while (fp > 0 && Character.toString(check) != System.lineSeparator()) {
+                    check = r.readChar();
+                    if (Character.toString(check) != System.lineSeparator()) {
+                        r.seek(--fp);
+                    } else {
+                        start = fp;
+                        break;
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return start;
     }
 }

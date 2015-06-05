@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Test Mpg Reader</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="MpgFolder">/sdcard/TestMpgFolder</string>
+    <string name="mpg_folder">/sdcard/TestMpgFolder</string>
     <!--<string name="TestFile">/sdcard/trackLog-2015-May-22_07-00-25.csv</string>-->
-    <string name="TestFile">TestMpgReader/trackLog-2015-May-22_07-00-25.csv</string>
+    <string name="test_file">TestMpgReader/trackLog-2015-May-22_07-00-25.csv</string>
+
+    <string name="date_label_text">Trip Date</string>
+    <string name="trip_mpg_label_text">Trip MPG</string>
+    <string name="update_button_text">Update</string>
 </resources>

@@ -10,31 +10,26 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * Created by talz13 on 5/26/15.
+ * Created by Jeff Byrom on 5/26/15.
  */
 public class MpgFile {
+    private File mFile;
 
-    private final Context context;
-//    private File myFile;
-
-    public MpgFile(Context context) {
-        this.context = context;
+    public MpgFile(File file) {
+        mFile = file;
     }
 
-    public boolean TestFile(String filename) {
-        File myFile = new File(filename);
-        if (myFile.exists() && myFile.isFile() && myFile.canRead()) {
-            System.out.println("File found!");
+    public boolean TestFile() {
+        if (mFile.exists() && mFile.isFile() && mFile.canRead()) {
             return true;
         }
-        System.out.println("File not found!");
         return false;
     }
 
-    public String ReadHeaderLine(String filename) {
+    public String ReadHeaderLine() {
         String line = null;
-        if (TestFile(filename)) {
-            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        if (TestFile()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(mFile))) {
                 line = br.readLine();
                 br.close();
             } catch (FileNotFoundException e) {
@@ -46,11 +41,11 @@ public class MpgFile {
         return line;
     }
 
-    public String ReadLastDataLine(String filename) {
+    public String ReadLastDataLine() {
         String line = null;
-        long lastLineStart = FindLastLineStart(filename);
-        if (TestFile(filename)) {
-            try (RandomAccessFile r = new RandomAccessFile(filename, "r")) {
+        long lastLineStart = FindLastLineStart();
+        if (TestFile()) {
+            try (RandomAccessFile r = new RandomAccessFile(mFile, "r")) {
                 r.seek(lastLineStart);
                 line = r.readLine();
             } catch (FileNotFoundException e) {
@@ -62,10 +57,10 @@ public class MpgFile {
         return line;
     }
 
-    public String ReadFirstDataLine(String filename) {
+    public String ReadFirstDataLine() {
         String line = null;
-        if (TestFile(filename)) {
-            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        if (TestFile()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(mFile))) {
                 br.readLine();  // readLine() to skip over first line
                 line = br.readLine();
                 br.close();
@@ -78,14 +73,10 @@ public class MpgFile {
         return line;
     }
 
-    public Context getContext() {
-        return context;
-    }
-
-    public long FindLastLineStart(String filename) {
+    public long FindLastLineStart() {
         long start = 0;
-        if (TestFile(filename)) {
-            try (RandomAccessFile r = new RandomAccessFile(filename, "r")) {
+        if (TestFile()) {
+            try (RandomAccessFile r = new RandomAccessFile(mFile, "r")) {
                 r.seek(r.length() - 2); // Skipping last 2 bytes to ignore trailing line separator
                 int check;
                 long fp = r.getFilePointer();

@@ -87,15 +87,15 @@ public class MpgFile {
         if (TestFile(filename)) {
             try (RandomAccessFile r = new RandomAccessFile(filename, "r")) {
                 r.seek(r.length() - 2); // Skipping last 2 bytes to ignore trailing line separator
-                char check = 0;
+                int check;
                 long fp = r.getFilePointer();
-                while (fp > 0 && Character.toString(check) != System.lineSeparator()) {
-                    check = r.readChar();
-                    if (Character.toString(check) != System.lineSeparator()) {
-                        r.seek(--fp);
-                    } else {
-                        start = fp;
+                while (fp > 0) {
+                    check = r.read();
+                    if (check == 0x0a) {
+                        start = r.getFilePointer();
                         break;
+                    } else {
+                        r.seek(--fp);
                     }
                 }
             } catch (FileNotFoundException e) {

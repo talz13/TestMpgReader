@@ -10,4 +10,13 @@
     <string name="date_label_text">Trip Date</string>
     <string name="trip_mpg_label_text">Trip MPG</string>
     <string name="update_button_text">Update</string>
+
+    <string-array name="csv_fields">
+        <item>GPS Time</item>
+        <item>Longitude</item>
+        <item>Latitude</item>
+        <item>Trip average MPG(mpg)</item>
+        <item>Trip Distance(miles)</item>
+        <item>Trip Time(Since journey start)(s)</item>
+    </string-array>
 </resources>

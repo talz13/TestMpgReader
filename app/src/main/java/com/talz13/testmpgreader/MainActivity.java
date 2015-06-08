@@ -16,6 +16,7 @@ public class MainActivity extends Activity {
 
     private Button mUpdateButton;
     private MpgFile mMpgFile;
+    private MpgParse mMpgParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,12 @@ public class MainActivity extends Activity {
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 mMpgFile = new MpgFile(new File(Environment.getExternalStorageDirectory(), getString(R.string.test_file)));
+                mMpgParser = new MpgParse(getResources().getStringArray(R.array.csv_fields));
+
+                String headerLine = mMpgFile.ReadHeaderLine();
+                String firstDataLine = mMpgFile.ReadFirstDataLine();
+                String lastDataLine = mMpgFile.ReadLastDataLine();
+
                 updateHeaderLineText(mMpgFile.ReadHeaderLine());
                 updateFirstDataLineText(mMpgFile.ReadFirstDataLine());
                 updateLastDataLineText(mMpgFile.ReadLastDataLine());

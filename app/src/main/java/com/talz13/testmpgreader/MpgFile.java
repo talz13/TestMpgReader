@@ -1,7 +1,5 @@
 package com.talz13.testmpgreader;
 
-import android.content.Context;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,10 +18,7 @@ public class MpgFile {
     }
 
     public boolean TestFile() {
-        if (mFile.exists() && mFile.isFile() && mFile.canRead()) {
-            return true;
-        }
-        return false;
+        return mFile.exists() && mFile.isFile() && mFile.canRead();
     }
 
     public String ReadHeaderLine() {

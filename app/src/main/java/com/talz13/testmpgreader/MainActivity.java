@@ -10,13 +10,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Comparator;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
 
     private Button mUpdateButton;
-    private MpgFile mMpgFile;
-    private MpgParse mMpgParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,31 +26,41 @@ public class MainActivity extends Activity {
         mUpdateButton = (Button)findViewById(R.id.update_button);
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                mMpgFile = new MpgFile(new File(Environment.getExternalStorageDirectory(), getString(R.string.test_file)));
-                mMpgParser = new MpgParse(getResources().getStringArray(R.array.csv_fields));
+                for (File file : new File(Environment.getExternalStorageDirectory(), getString(R.string.mpg_folder)).listFiles()) {
+                    MpgFile mpgFile = new MpgFile(file);
+                    MpgParse mpgParse = new MpgParse(getResources().getStringArray(R.array.csv_fields));
 
-                String headerLine = mMpgFile.ReadHeaderLine();
-                String firstDataLine = mMpgFile.ReadFirstDataLine();
-                String lastDataLine = mMpgFile.ReadLastDataLine();
-
-                updateHeaderLineText(mMpgFile.ReadHeaderLine());
-                updateFirstDataLineText(mMpgFile.ReadFirstDataLine());
-                updateLastDataLineText(mMpgFile.ReadLastDataLine());
+                    mpgParse.parseHeaderLine(mpgFile.ReadHeaderLine());
+                    updateSummaryText(mpgParse.parseDataLine(mpgFile.ReadLastDataLine()));
+                }
             }
         });
     }
 
-    public void updateHeaderLineText(String text) {
-        ((TextView)findViewById(R.id.headerLineValue)).setText(text);
+//    public void updateHeaderLineText(String text) {
+//        ((TextView)findViewById(R.id.headerLineValue)).setText(text);
+//    }
+//
+//    public void updateFirstDataLineText(String text) {
+//        ((TextView)findViewById(R.id.firstDataLineValue)).setText(text);
+//    }
+
+    public void updateSummaryText(Map<String, String> inputMap) {
+        TextView summaryTextView = (TextView)findViewById(R.id.lastDataLineValue);
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : inputMap.entrySet()) {
+            if (sb.length() != 0) {
+                sb.append(System.lineSeparator());
+            }
+            sb.append(entry.getKey()).append(": ").append(entry.getValue());
+        }
+//        if (summaryTextView.length() )
+        ((TextView)findViewById(R.id.lastDataLineValue)).append(sb.toString());
     }
 
-    public void updateFirstDataLineText(String text) {
-        ((TextView)findViewById(R.id.firstDataLineValue)).setText(text);
-    }
-
-    public void updateLastDataLineText(String text) {
-        ((TextView)findViewById(R.id.lastDataLineValue)).setText(text);
-    }
+//    private Comparator<File> compareFileLastModified {
+//
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

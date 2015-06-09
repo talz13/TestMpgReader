@@ -1,23 +1,23 @@
 package com.talz13.testmpgreader;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Created by Jeff Byrom on 6/8/15.
  */
 public class MpgParse {
-    private HashMap<String, Integer> mColumnList;
+    private Map<String, Integer> mColumnList;
 
     public MpgParse(String[] columnList) {
-        mColumnList = new HashMap<>();
+        mColumnList = new LinkedHashMap<>();
         for (String column : columnList) {
             this.mColumnList.put(column, -1);
         }
     }
 
-    public void ParseHeaderLine(String line) {
-        String[] splitLine = line.split(",");
+    public void parseHeaderLine(String csvHeader) {
+        String[] splitLine = csvHeader.split(",");
 
         for (int i = 0; i < splitLine.length; i++) {
             if (mColumnList.containsKey(splitLine[i].trim())) {
@@ -26,24 +26,19 @@ public class MpgParse {
         }
     }
 
-    public HashMap<String, String> ParseDataLine(String line) {
-        String[] splitLine = line.split(",");
-        HashMap<String, String> returnMap = new HashMap<>();
+    public Map<String, String> parseDataLine(String csvDataLine) {
+        String[] splitLine = csvDataLine.split(",");
+        LinkedHashMap<String, String> returnMap = new LinkedHashMap<>();
 
         for (Map.Entry<String, Integer> entry : mColumnList.entrySet()) {
-            returnMap.put(entry.getKey(), splitLine[entry.getValue()]);
+            if (entry.getValue() >= 0) {
+                returnMap.put(entry.getKey(), splitLine[entry.getValue()]);
+            }
         }
         return returnMap;
     }
 
-    public String[] GetHeaderColumns() {
-        if (mColumnList != null) {
-            return mColumnList.keySet().toArray(new String[mColumnList.keySet().size()]);
-        }
-        return null;
-    }
-
-    public HashMap<String, Integer> GetHashMap() {
+    public Map<String, Integer> getMap() {
         return mColumnList;
     }
 }

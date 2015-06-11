@@ -7,21 +7,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
-import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 public class MainActivity extends Activity {
 
     private Button mUpdateButton;
+    private LinkedHashMap<String, TextView> mFileList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFileList = new LinkedHashMap<>();
 
         mUpdateButton = (Button)findViewById(R.id.update_button);
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
@@ -31,22 +35,14 @@ public class MainActivity extends Activity {
                     MpgParse mpgParse = new MpgParse(getResources().getStringArray(R.array.csv_fields));
 
                     mpgParse.parseHeaderLine(mpgFile.ReadHeaderLine());
-                    updateSummaryText(mpgParse.parseDataLine(mpgFile.ReadLastDataLine()));
+                    String fileSummary = generateSummaryText(mpgParse.parseDataLine(mpgFile.ReadLastDataLine()));
+                    updateFileListView(file.getPath(), fileSummary);
                 }
             }
         });
     }
 
-//    public void updateHeaderLineText(String text) {
-//        ((TextView)findViewById(R.id.headerLineValue)).setText(text);
-//    }
-//
-//    public void updateFirstDataLineText(String text) {
-//        ((TextView)findViewById(R.id.firstDataLineValue)).setText(text);
-//    }
-
-    public void updateSummaryText(Map<String, String> inputMap) {
-        TextView summaryTextView = (TextView)findViewById(R.id.lastDataLineValue);
+    public String generateSummaryText(Map<String, String> inputMap) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> entry : inputMap.entrySet()) {
             if (sb.length() != 0) {
@@ -54,13 +50,20 @@ public class MainActivity extends Activity {
             }
             sb.append(entry.getKey()).append(": ").append(entry.getValue());
         }
-//        if (summaryTextView.length() )
-        ((TextView)findViewById(R.id.lastDataLineValue)).append(sb.toString());
+        return sb.toString();
     }
 
-//    private Comparator<File> compareFileLastModified {
-//
-//    }
+    public void updateFileListView(String filename, String text) {
+        if (!mFileList.containsKey(filename)) {
+            TextView newTextView = new TextView(this);
+            newTextView.setText(text);
+            newTextView.setBackgroundResource(R.drawable.text_view_background);
+            mFileList.put(filename, newTextView);
+            ((LinearLayout)findViewById(R.id.fileListContainer)).addView(newTextView);
+        } else {
+            mFileList.get(filename).setText(text);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
